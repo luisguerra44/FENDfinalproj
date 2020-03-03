@@ -1,0 +1,24 @@
+{
+  "name": "webjournalapp",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "0s": "^1.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "expres": "^0.0.5",
+    "express": "^4.17.1",
+    "init": "^0.1.2",
+    "nodemon": "^2.0.2",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
