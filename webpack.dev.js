@@ -3,8 +3,8 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-    mode: 'production',
-    entry: './src/client/`index.js',
+    mode: 'development',
+    entry: 'src/client/index.js',
     module: {
         rules: [
             {
@@ -16,7 +16,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebPackPlugin({
-            template: path.join(__dirname, "src/client/views/index.html"),
+            template: "src/client/views/index.html",
             filename: "./index.html"
         })
     ]
