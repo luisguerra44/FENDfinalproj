@@ -1,86 +1,143 @@
-/* Global Variables */
-const baseURL = `http://api.openweathermap.org/data/2.5/weather?zip=`;
-const apiKey = '&appid=426e2854445b1013aed7407f5e9b641d';
+const result = document.querySelector("#result");
+const planner = document.querySelector("#planner");
+const addTripButton = document.querySelector(".map__link");
+const printButton = document.querySelector("#save");
+const deleteButton = document.querySelector("#delete");
+const form = document.querySelector("#form");
+const leavingFrom = document.querySelector('input[name="from"]');
+const goingTo = document.querySelector('input[name="to"]');
+const depDate = document.querySelector('input[name="date"]');
+const geonamesURL = 'http://api.geonames.org/postalCodeSearchJSON?placename=austin&';
+const username = 'luisguerra44';
+const timestampNow = (Date.now()) / 1000;
+const darkAPIURL = "https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/";
+const darkAPIkey = "18d3edfabe7c1aca69e12c3435fb2bc3";
+const pixabayApiUrl = "https://pixabay.com/api/?key=";
+const pixabayApikey = "15613626-e85ccff9f9c79c823442eb254";
 
 
-// Create a new date instance dynamically with JS
-let d = new Date();
-let month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-let m = month[d.getMonth()];
-let newDate = d.getDate() + '/' + m + '/' + d.getFullYear();
-console.log(newDate);
+// EVENT LISTENERS
 
-
-// Event listener to add function to existing HTML DOM element
-document.getElementById('generate').addEventListener('click', performAction);
-
-
-/* Function called by event listener */
-function performAction(e) {
+// add trip button
+export const addTripList = addTripButton.addEventListener('click', function (e) {
   e.preventDefault();
-  const newZip = document.getElementById('zip').value;
-  const feeling = document.getElementById('feelings').value;
+  planner.scrollIntoView({ behavior: 'smooth' });
+})
+// form submit
+form.addEventListener('submit', addTrip);
+// print button
+printButton.addEventListener('click', function (e) {
+  window.print();
+  location.reload();
+});
+// delete button
+deleteButton.addEventListener('click', function (e) {
+  form.reset();
+  result.classList.add("invisible");
+  location.reload();
+})
 
-  // get user input values
-  getWeather(baseURL, newZip, apiKey)
-    .then(function (data) {
-      // add data to POST request
-      return postData('/add', { date: newDate, temp: data.main.temp, content:feeling })
+// FUNCTIONS 
+
+// Function called when form is submitted
+export function addTrip(e) {
+  e.preventDefault();
+  //Acquiring and storing user trip data
+  const leavingFromText = leavingFrom.value;
+  const goingToText = goingTo.value;
+  const depDateText = depDate.value;
+  const timestamp = (new Date(depDateText).getTime()) / 1000;
+
+  // function checkInput to validate input 
+  Client.inputCheck(leavingFromText, goingToText, username);
+
+  getCityInfo(geonamesURL, goingToText, username)
+    .then((cityData) => {
+      const cityLat = cityData.geonames[0].lat;
+      const cityLong = cityData.geonames[0].lng;
+      const country = cityData.geonames[0].countryName;
+      const weatherData = getWeather(cityLat, cityLong, country, timestamp)
+      return weatherData;
     })
-    .then(function(){
-      // call updateUI to update browser content
-      return updateUI()
-      })
+    .then((weatherData) => {
+      const daysLeft = Math.round((timestamp - timestampNow) / 86400);
+      const userData = postData('http://localhost:8800/add', { leavingFromText, goingToText, depDateText, weather: weatherData.currently.temperature, summary: weatherData.currently.summary, daysLeft });
+      return userData;
+    }).then((userData) => {
+      updateUI(userData);
+    })
 }
 
-/* Function to GET Web API Data*/
-const getWeather = async (baseURL, newZip, apiKey) => {
+//function getCityInfo to get city information from Geonames (latitude, longitude, country)
+
+export const getCityInfo = async (geonamesURL, goingToText, username) => {
   // res equals to the result of fetch function
-  const respond = await fetch(baseURL + newZip + apiKey);
+  const res = await fetch(geonamesURL + goingToText + "username=" + username);
   try {
-    // userData equals to the result of fetch function
-    const data = await respond.json();
-    return data;
+    const cityData = await res.json();
+    return cityData;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+// function getWeather to get weather information from Dark Sky API 
+
+export const getWeather = async (cityLat, cityLong, country, timestamp) => {
+  const req = await fetch(darkAPIURL + "/" + darkAPIkey + "/" + cityLat + "," + cityLong + "," + timestamp + "?exclude=minutely,hourly,daily,flags");
+  try {
+    const weatherData = await req.json();
+    return weatherData;
   } catch (error) {
     console.log("error", error);
   }
 }
 
-/* Function to POST data */
-
-const postData = async (url = '/add', data = {}) => {
-    console.log(data);
-    const res = await fetch(url, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type':'application/json',
-        },
-        body: JSON.stringify(data),
-    });
-
-    try {
-        const newData = await res.json();
-        console.log(newData);
-        return newData;
-    } catch(error) {
-        console.log('error', error);
-    }
+// Function postData to POST data to our local server
+export const postData = async (url = '', data = {}) => {
+  const req = await fetch(url, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    body: JSON.stringify({
+      depCity: data.leavingFromText,
+      arrCity: data.goingToText,
+      depDate: data.depDateText,
+      weather: data.weather,
+      summary: data.summary,
+      daysLeft: data.daysLeft
+    })
+  })
+  try {
+    const userData = await req.json();
+    return userData;
+  } catch (error) {
+    console.log("error", error);
+  }
 }
 
-/*Function to update UI*/
-const updateUI = async () => {
-  const request = await fetch('/all');
+// Function update UI that reveals the results page with updated trip information including fetched image of the destination
+
+export const updateUI = async (userData) => {
+  result.classList.remove("invisible");
+  result.scrollIntoView({ behavior: "smooth" });
+
+  const res = await fetch(pixabayApiUrl + pixabayApikey + "&q=" + userData.City + "+city&image_type=photo");
+
   try {
-    const dataToUse = await request.json()
-    // update new entry values
-    document.getElementById('date').innerHTML = 'the date today is: ' + dataToUse.date;
-    document.getElementById('temp').innerHTML = 'the temperature in your city is: ' + dataToUse.temp;
-    document.getElementById('content').innerHTML = 'your mood today is: ' + dataToUse.content;
+    const imageLink = await res.json();
+    const dateSplit = userData.depDate.split("-").reverse().join(" / ");
+    document.querySelector("#city").innerHTML = userData.City;
+    document.querySelector("#date").innerHTML = dateSplit;
+    document.querySelector("#days").innerHTML = userData.daysLeft;
+    document.querySelector("#summary").innerHTML = userData.summary;
+    document.querySelector("#temp").innerHTML = userData.weather;
+    document.querySelector("#fromPixabay").setAttribute('src', imageLink.hits[0].webformatURL);
   }
   catch (error) {
     console.log("error", error);
   }
-};
+}
 
-export default performAction
