@@ -7,8 +7,8 @@ const form = document.querySelector("#form");
 const leavingFrom = document.querySelector('input[name="from"]');
 const goingTo = document.querySelector('input[name="to"]');
 const depDate = document.querySelector('input[name="date"]');
-const geonamesURL = 'http://api.geonames.org/postalCodeSearchJSON?placename=austin&';
-const username = 'luisguerra44';
+const geonamesURL = 'http://api.geonames.org/searchJSON?q=';
+const username = "luisguerra44";
 const timestampNow = (Date.now()) / 1000;
 const darkAPIURL = "https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/";
 const darkAPIkey = "18d3edfabe7c1aca69e12c3435fb2bc3";
@@ -48,7 +48,7 @@ export function addTrip(e) {
   const depDateText = depDate.value;
   const timestamp = (new Date(depDateText).getTime()) / 1000;
 
-  // function checkInput to validate input 
+  // function inputCheck to validate input 
   Client.inputCheck(leavingFromText, goingToText, username);
 
   getCityInfo(geonamesURL, goingToText, username)
@@ -72,7 +72,7 @@ export function addTrip(e) {
 
 export const getCityInfo = async (geonamesURL, goingToText, username) => {
   // res equals to the result of fetch function
-  const res = await fetch(geonamesURL + goingToText + "username=" + username);
+  const res = await fetch(geonamesURL + goingToText + "&username=" + username);
   try {
     const cityData = await res.json();
     return cityData;
