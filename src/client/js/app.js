@@ -124,20 +124,30 @@ export const updateUI = async (userData) => {
   result.classList.remove("invisible");
   result.scrollIntoView({ behavior: "smooth" });
 
-  const res = await fetch(pixabayApiUrl + pixabayApikey + "&q=" + userData.City + "+city&image_type=photo");
+  const res = await fetch(
+    pixabayApiUrl +
+      pixabayApikey +
+      '&q=' +
+      userData.arrCity +
+      '+city&image_type=photo',
+  );
 
   try {
     const imageLink = await res.json();
-    const dateSplit = userData.depDate.split("-").reverse().join(" / ");
-    document.querySelector("#city").innerHTML = userData.City;
-    document.querySelector("#date").innerHTML = dateSplit;
-    document.querySelector("#days").innerHTML = userData.daysLeft;
-    document.querySelector("#summary").innerHTML = userData.summary;
-    document.querySelector("#temp").innerHTML = userData.weather;
-    document.querySelector("#fromPixabay").setAttribute('src', imageLink.hits[0].webformatURL);
-  }
-  catch (error) {
-    console.log("error", error);
-  }
+    console.log({ imageLink });
+    // TODO: Use toLocaleDateString()
+    const dateSplit = userData.depDate
+      .split('-')
+      .reverse()
+      .join(' / ');
+    document.querySelector('#city').innerHTML = userData.arrCity;
+    document.querySelector('#date').innerHTML = dateSplit;
+    document.querySelector('#days').innerHTML = userData.daysLeft;
+    document.querySelector('#summary').innerHTML = userData.summary;
+    document.querySelector('#temp').innerHTML = userData.weather;
+    // TODO: #fromPixabay doesn't exist
+    // document.querySelector("#fromPixabay").setAttribute('src', imageLink.hits[0].webformatURL);
+  } catch (error) {
+    console.log('error', error);
 }
-
+};
