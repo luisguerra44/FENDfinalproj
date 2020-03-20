@@ -10,10 +10,16 @@ module.exports = {
     mode: 'development',
     entry: './src/client/index.js',
     devtool: 'source-map',
+    devServer: {
+        port: 8800
+      },
     output: {
         libraryTarget: 'var',
         library: 'Client',
         path: path.resolve(__dirname, 'dist')
+    },
+    optimization: {
+        minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})]
     },
     module: {
         rules: [
@@ -24,14 +30,18 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: [ MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader' ]
+                use: [ 'style-loader', 'css-loader', 'sass-loader' ]
+            },
+            {
+                test: /\.html$/,
+                use: ['html-loader'],
             }
         ]
     },
     plugins: [
         new HtmlWebPackPlugin({
             template: "./src/client/views/index.html",
-            filename: "./index.html"
+            filename: "./index.html",
         }),
         new CleanWebpackPlugin({
             // Simulate the removal of files
