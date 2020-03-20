@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Endpoint for all routes
-let projectData = {};
+let projectData = [];
 
 // BodyParser config
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,7 +30,7 @@ function addInfo(req, res) {
   projectData['weather'] = req.body.weather;
   projectData['summary'] = req.body.summary;
   projectData['daysLeft'] = req.body.daysLeft;
-  req.send(projectData);
+  res.send(projectData);
 }
 
 // Setup Server
