@@ -30,7 +30,7 @@ function addInfo(req, res) {
   projectData['weather'] = req.body.weather;
   projectData['summary'] = req.body.summary;
   projectData['daysLeft'] = req.body.daysLeft;
-  res.send(projectData);
+  req.send(projectData);
 }
 
 // Setup Server
