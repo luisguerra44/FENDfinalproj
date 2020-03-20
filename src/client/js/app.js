@@ -145,8 +145,17 @@ export const updateUI = async (userData) => {
     document.querySelector('#days').innerHTML = userData.daysLeft;
     document.querySelector('#summary').innerHTML = userData.summary;
     document.querySelector('#temp').innerHTML = userData.weather;
+<<<<<<< HEAD
     document.querySelector("#fromPixabay").setAttribute('src', imageLink.hits[0].webformatURL);
   } catch (error) {
     console.log('error', error);
 }
 };
+=======
+    // TODO: #fromPixabay doesn't exist
+    // document.querySelector("#fromPixabay").setAttribute('src', imageLink.hits[0].webformatURL);
+  } catch (error) {
+    console.log('error', error);
+}
+};
+>>>>>>> 79f661c197619264e46803335295a5154f874036
