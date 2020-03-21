@@ -6,6 +6,15 @@ const app = express();
 // Endpoint for all routes
 let projectData = {};
 
+//test for jest
+const newObj = () => {
+  let newObj = {};
+  return newObj;
+};
+
+module.exports = {newObj}; 
+
+
 // BodyParser config
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
