@@ -23,14 +23,14 @@ app.get('/', function(req, res) {
 // Post Route
 app.post('/add', addInfo);
 
-function addInfo(req, res) {
+function addInfo(req, response) {
   projectData['depCity'] = req.body.depCity;
   projectData['arrCity'] = req.body.arrCity;
   projectData['depDate'] = req.body.depDate;
   projectData['weather'] = req.body.weather;
   projectData['summary'] = req.body.summary;
   projectData['daysLeft'] = req.body.daysLeft;
-  res.send(projectData);
+  response.send(projectData);
 }
 
 // Setup Server

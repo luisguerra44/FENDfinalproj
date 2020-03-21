@@ -45,7 +45,7 @@
         <div class="container results">
             <div class="container results">
             <div class="result__image">
-              <img src="/src/client/views/images/planes.jpg/images/planes.jpg" alt="destination image" id="fromPixabay">
+              <img src="/src/client/views/images/planes.jpg" alt="destination image" id="fromPixabay">
             </div>
             </div>
           <div class="result__content">
@@ -70,7 +70,15 @@
       </section>
     </main>
 
-    <!-- <script src="app.js" type="text/javascript"></script>  -->
+    <script>
+      // Check that service workers are supported
+      if ('serviceWorker' in navigator) {
+          // Use the window load event to keep the page load performant
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/service-worker.js');
+          });
+      }
+  </script>
 
    </body>
 
